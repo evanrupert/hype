@@ -1,7 +1,11 @@
+import org.flywaydb.gradle.task.FlywayMigrateTask
+
 plugins {
     id 'org.springframework.boot' version '2.1.3.RELEASE'
     id 'org.jetbrains.kotlin.jvm' version '1.3.21'
     id 'org.jetbrains.kotlin.plugin.spring' version '1.3.21'
+
+    id "org.flywaydb.flyway" version "5.2.4"
 }
 
 apply plugin: 'io.spring.dependency-management'
@@ -33,6 +37,18 @@ dependencies {
 
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.3.1'
     testImplementation 'io.strikt:strikt-core:0.19.7'
+}
+
+task migrateDB(type: FlywayMigrateTask) {
+    url ='jdbc:postgresql://localhost:5432/hype'
+    user = "$System.env.HYPE_DATABASE_USER"
+    password = "$System.env.HYPE_DATABASE_PASSWORD"
+}
+
+task migrateTestDB(type: FlywayMigrateTask) {
+    url ='jdbc:postgresql://localhost:5432/hype_test'
+    user = "$System.env.HYPE_DATABASE_USER"
+    password = "$System.env.HYPE_DATABASE_PASSWORD"
 }
 
 compileKotlin {

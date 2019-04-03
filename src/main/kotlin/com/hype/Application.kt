@@ -7,7 +7,6 @@ import org.springframework.boot.runApplication
 class HypeApplication
 
 // TODO: Finish CRUD for users/items/transactions
-// TODO: Implement flyway in order to handle database migrations
 
 fun main(args: Array<String>) {
     runApplication<HypeApplication>(*args)
