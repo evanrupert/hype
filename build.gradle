@@ -12,6 +12,7 @@ sourceCompatibility = '1.8'
 
 repositories {
     mavenCentral()
+    jcenter()
 }
 
 defaultTasks 'bootrun'
@@ -21,8 +22,14 @@ dependencies {
     implementation 'com.fasterxml.jackson.module:jackson-module-kotlin'
     implementation 'org.jetbrains.kotlin:kotlin-reflect'
     implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.2.0-alpha'
+
     runtimeOnly 'org.springframework.boot:spring-boot-devtools'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+    compile 'org.postgresql:postgresql:42.2.2'
+    compile 'com.zaxxer:HikariCP:2.7.8'
+    compile 'org.jetbrains.exposed:exposed:0.13.2'
 }
 
 compileKotlin {

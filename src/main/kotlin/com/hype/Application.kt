@@ -7,5 +7,6 @@ import org.springframework.boot.runApplication
 class HypeApplication
 
 fun main(args: Array<String>) {
+    HypeDatabase.connect
     runApplication<HypeApplication>(*args)
 }
