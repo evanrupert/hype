@@ -1,18 +1,12 @@
 package com.hype.items
 
-import com.hype.DatabaseTest
-import com.hype.JSON
+import com.hype.ApiTest
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.http.MediaType
 import org.springframework.test.context.ActiveProfiles
-import org.springframework.test.web.servlet.MockMvc
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import strikt.api.expectThat
 import strikt.assertions.contains
 import strikt.assertions.doesNotContain
@@ -22,10 +16,7 @@ import strikt.assertions.isEqualTo
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
-class ItemControllerTest : DatabaseTest() {
-
-    @Autowired
-    private lateinit var mvc: MockMvc
+class ItemControllerTest : ApiTest() {
 
     @Test
     fun `create will add a new item to the database`() {
@@ -36,14 +27,9 @@ class ItemControllerTest : DatabaseTest() {
             size = "Women's 15"
         )
 
-        mvc.perform(post("/items")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(JSON.write(item)))
-            .andExpect(status().isOk)
-            .andExpect {
-                val resp = JSON.read<Item>(it.response.contentAsString)
-                expectThat(resp).isEqualTo(item)
-            }
+        assertPost("/items", item) { resp: Item ->
+            expectThat(resp).isEqualTo(item)
+        }
 
         val items = ItemRepo.all()
 
@@ -76,25 +62,19 @@ class ItemControllerTest : DatabaseTest() {
 
         @Test
         fun `all returns all items in the database`() {
-            mvc.perform(get("/items"))
-                .andExpect(status().isOk)
-                .andExpect {
-                    val items: List<Item> = JSON.read(it.response.contentAsString)
-                    expectThat(items) {
-                        hasSize(2)
-                        contains(nike, sperry)
-                    }
+            assertGet("/items") { resp: List<Item> ->
+                expectThat(resp) {
+                    hasSize(2)
+                    contains(nike, sperry)
                 }
+            }
         }
 
         @Test
         fun `find returns a single item by id`() {
-            mvc.perform(get("/items/${nike.id}"))
-                .andExpect(status().isOk)
-                .andExpect {
-                    val item: Item = JSON.read(it.response.contentAsString)
-                    expectThat(item).isEqualTo(nike)
-                }
+            assertGet("/items/${nike.id}") { resp: Item ->
+                expectThat(resp).isEqualTo(nike)
+            }
         }
 
         @Test
@@ -106,14 +86,9 @@ class ItemControllerTest : DatabaseTest() {
                 size = "Updated"
             )
 
-            mvc.perform(put("/items")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(JSON.write(updatedItem)))
-                .andExpect(status().isOk)
-                .andExpect {
-                    val resp: Item = JSON.read(it.response.contentAsString)
-                    expectThat(resp).isEqualTo(updatedItem)
-                }
+            assertPut("/items", updatedItem) { resp: Item ->
+                expectThat(resp).isEqualTo(updatedItem)
+            }
 
             expectThat(ItemRepo.all()) {
                 hasSize(2)
@@ -124,12 +99,9 @@ class ItemControllerTest : DatabaseTest() {
 
         @Test
         fun `delete removes a specific item from the database by id`() {
-            mvc.perform(delete("/items/${nike.id}"))
-                .andExpect(status().isOk)
-                .andExpect {
-                    val resp: Item = JSON.read(it.response.contentAsString)
-                    expectThat(resp).isEqualTo(nike)
-                }
+            assertDelete("/items/${nike.id}") { resp: Item ->
+                expectThat(resp).isEqualTo(nike)
+            }
 
             expectThat(ItemRepo.all()) {
                 hasSize(1)
