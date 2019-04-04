@@ -5,6 +5,24 @@ import org.jetbrains.exposed.sql.*
 import java.util.*
 
 object UserRepo : Repo() {
+
+    private object Users : Table("users") {
+        val id = uuid("id")
+        val email = varchar("email", 255)
+        val password = varchar("password", 255)
+        val firstName = varchar("firstname", 255)
+        val lastName = varchar("lastname", 255)
+
+        fun toUser(row: ResultRow): User =
+            User(
+                id = row[Users.id],
+                email = row[Users.email],
+                password = row[Users.password],
+                firstName = row[Users.firstName],
+                lastName = row[Users.lastName]
+            )
+    }
+
     fun all(): List<User> = query {
         Users.selectAll().map(Users::toUser)
     }
